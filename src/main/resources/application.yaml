@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mysql317.1gb.ua:3306/gbua_mmcourse?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false
+    username: gbua_mmcourse
+    password: ddccbbef4zxv
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: false
+
+  mail:
+    host: smtp-5.1gb.ua
+    username: 'u94979'
+    password: '0180b4a8'
+    port: 25
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+    protocol: smtp
+sender:
+  mail: school@mmbeauty.com.ua
+
+password:
+  length: 15
+

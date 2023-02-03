@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '2.7.8'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.mmbeautyschool'
+version = '0.1.1'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repo.spring.io/release"
+    }
+    maven {
+        url "https://repository.jboss.org/maven2"
+    }
+    maven {
+        url "https://github.com/liqpay/sdk-java/raw/repository"
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+    implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    //implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.49'
+
+// https://mvnrepository.com/artifact/org.eclipse.persistence/javax.persistence
+    implementation group: 'org.eclipse.persistence', name: 'javax.persistence', version: '2.2.1'
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.7.8'
+
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'com.liqpay:liqpay-sdk:0.7-SNAPSHOT'
+    annotationProcessor 'org.projectlombok:lombok'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
