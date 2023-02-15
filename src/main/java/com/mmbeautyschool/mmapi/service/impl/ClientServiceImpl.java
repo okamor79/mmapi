@@ -6,7 +6,8 @@ import com.mmbeautyschool.mmapi.entity.enums.UserRole;
 import com.mmbeautyschool.mmapi.entity.enums.UserStatus;
 import com.mmbeautyschool.mmapi.exception.ClientAlreadyExistException;
 import com.mmbeautyschool.mmapi.exception.ClientUnauthorizedException;
-import com.mmbeautyschool.mmapi.exception.NotClientFoundException;
+import com.mmbeautyschool.mmapi.exception.ClientNotFoundException;
+import com.mmbeautyschool.mmapi.model.ClientModel;
 import com.mmbeautyschool.mmapi.repository.ClientRepository;
 import com.mmbeautyschool.mmapi.service.ClientService;
 import com.mmbeautyschool.mmapi.service.EmailService;
@@ -43,10 +44,10 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<Client> getAllClients() throws NotClientFoundException {
+    public List<Client> getAllClients() throws ClientNotFoundException {
         List<Client> clientList = clientRepository.findAll();
-        if (clientList == null) {
-            throw new NotClientFoundException("No clients register");
+        if (clientList.isEmpty()) {
+            throw new ClientNotFoundException("No clients register");
         }
         return clientList;
     }
@@ -57,16 +58,15 @@ public class ClientServiceImpl implements ClientService {
         if (clientInfo != null) {
             throw new ClientAlreadyExistException("E-mail already registered");
         }
-        Client newClient = client;
-        newClient.setRegistered(new Date());
-        newClient.setRole(UserRole.ROLE_USER);
-        newClient.setStatus(UserStatus.USER_ENABLE);
-        clientRepository.save(newClient);
-        return clientRepository.getClientByEmail(newClient.getEmail()).getId();
+        client.setRegistered(new Date());
+        client.setRole(UserRole.ROLE_USER);
+        client.setStatus(UserStatus.USER_ENABLE);
+        clientRepository.save(client);
+        return clientRepository.getClientByEmail(client.getEmail()).getId();
     }
 
     @Override
-    public Client clientLogin(String email, String password) throws ClientUnauthorizedException {
+    public ClientModel clientLogin(String email, String password) throws ClientUnauthorizedException {
         Client clientInfo = clientRepository.getClientByEmail(email);
         if (clientInfo == null) {
             throw new ClientUnauthorizedException("Client not found");
@@ -74,34 +74,33 @@ public class ClientServiceImpl implements ClientService {
         if (!clientInfo.getPassword().contentEquals(password)) {
             throw new ClientUnauthorizedException("Bad password");
         }
-        return clientInfo;
+        return ClientModel.toModel(clientInfo);
     }
 
     @Override
-    public Client getClientInfo(String email) throws NotClientFoundException {
+    public ClientModel getClientInfo(String email) throws ClientNotFoundException {
         Client client = clientRepository.getClientByEmail(email);
         if (client == null) {
-            throw new NotClientFoundException("Client not found");
+            throw new ClientNotFoundException("Client not found");
         }
-        return client;
+        System.out.println(client);
+        System.out.println(ClientModel.toModel(client));
+        return ClientModel.toModel(client);
     }
 
-    @Override
-    public Client getClientByID(Long id) {
-        return clientRepository.getClientById(id);
-    }
 
     @Override
-    public Client modifyClient(Client client) {
+    public ClientModel modifyClient(Client client) {
         client.setLastEdit(new Date());
-        return clientRepository.save(client);
+        clientRepository.save(client);
+        return ClientModel.toModel(client);
     }
 
     @Override
-    public Boolean resetPassword(String email) throws NotClientFoundException {
+    public Boolean resetPassword(String email) throws ClientNotFoundException {
         Client client = clientRepository.getClientByEmail(email);
         if (client == null) {
-            throw new NotClientFoundException("Email does not registered");
+            throw new ClientNotFoundException("Email does not registered");
         }
         String newPassword = passwordGenetator(passwordLength);
         String encodePassword = Base64.getEncoder().encodeToString(newPassword.getBytes());

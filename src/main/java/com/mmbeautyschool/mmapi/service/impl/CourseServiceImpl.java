@@ -2,6 +2,8 @@ package com.mmbeautyschool.mmapi.service.impl;
 
 import com.mmbeautyschool.mmapi.entity.Course;
 import com.mmbeautyschool.mmapi.entity.enums.CourseSatatus;
+import com.mmbeautyschool.mmapi.exception.CourseAlreadyExistException;
+import com.mmbeautyschool.mmapi.exception.CourseNotFound;
 import com.mmbeautyschool.mmapi.repository.CourseRepository;
 import com.mmbeautyschool.mmapi.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +18,34 @@ public class CourseServiceImpl implements CourseService {
     private CourseRepository courseRepository;
 
     @Override
-    public List<Course> getAllCourse() {
-        return courseRepository.findAll();
-    }
-
-    @Override
-    public Course getCourseById(Long id) {
-        return courseRepository.getCourseById(id);
-    }
-
-    @Override
-    public long newCourse(Course course) {
-        Course newCourse = courseRepository.getCourseByUniqCode(course.getUniqCode());
-        if (newCourse == null) {
-            newCourse = course;
-            newCourse.setUniqCode(newCourse.getUniqCode().toUpperCase());
-            courseRepository.save(newCourse);
-            return courseRepository.getCourseByUniqCode(newCourse.getUniqCode()).getId();
-        } else {
-            return 997;
+    public List<Course> getAllCourse() throws CourseNotFound {
+        List<Course> courses = courseRepository.findAll();
+        if (courses.isEmpty()) {
+            throw new CourseNotFound("Courses not found");
         }
+        return courses;
+    }
+
+    @Override
+    public Course getCourseById(Long id) throws CourseNotFound {
+        Course course = courseRepository.getCourseById(id);
+        if (course == null) {
+            throw new CourseNotFound("Course not found");
+        }
+        return course;
+    }
+
+    @Override
+    public long newCourse(Course course) throws CourseAlreadyExistException {
+        Course newCourse = courseRepository.getCourseByUniqCode(course.getUniqCode());
+        if (newCourse != null) {
+            throw new CourseAlreadyExistException("Course with this unique code is already exist");
+        }
+        newCourse = course;
+        newCourse.setUniqCode(newCourse.getUniqCode().toUpperCase());
+        courseRepository.save(newCourse);
+        return newCourse.getId();
+
     }
 
     @Override

@@ -4,25 +4,25 @@ import com.mmbeautyschool.mmapi.entity.Client;
 import com.mmbeautyschool.mmapi.entity.enums.UserStatus;
 import com.mmbeautyschool.mmapi.exception.ClientAlreadyExistException;
 import com.mmbeautyschool.mmapi.exception.ClientUnauthorizedException;
-import com.mmbeautyschool.mmapi.exception.NotClientFoundException;
+import com.mmbeautyschool.mmapi.exception.ClientNotFoundException;
+import com.mmbeautyschool.mmapi.model.ClientModel;
 
 import java.util.List;
 
 public interface ClientService {
 
-    List<Client> getAllClients() throws NotClientFoundException;
+    List<Client> getAllClients() throws ClientNotFoundException;
 
     long newClient(Client client) throws ClientAlreadyExistException;
 
-    Client clientLogin(String email, String password) throws ClientUnauthorizedException;
+    ClientModel clientLogin(String email, String password) throws ClientUnauthorizedException;
 
-    Client getClientInfo(String email) throws NotClientFoundException;
+    ClientModel getClientInfo(String email) throws ClientNotFoundException;
 
-    Client getClientByID(Long id);
 
-    Client modifyClient(Client client);
+    ClientModel modifyClient(Client client);
 
-    Boolean resetPassword(String email) throws NotClientFoundException;
+    Boolean resetPassword(String email) throws ClientNotFoundException;
 
     void changeClientStatus(Long id, UserStatus status);
 

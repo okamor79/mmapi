@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "Course")
+@Table(name = "course")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -43,6 +43,8 @@ public class Course {
     private double price;
 
     private double discount = 1;
+
+    private String promoCode;
 
     @Lob
     private String fullDescription;
