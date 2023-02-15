@@ -3,7 +3,7 @@ package com.mmbeautyschool.mmapi.controller;
 import com.mmbeautyschool.mmapi.entity.Course;
 import com.mmbeautyschool.mmapi.entity.enums.CourseSatatus;
 import com.mmbeautyschool.mmapi.exception.CourseAlreadyExistException;
-import com.mmbeautyschool.mmapi.exception.CourseNotFound;
+import com.mmbeautyschool.mmapi.exception.CourseNotFoundException;
 import com.mmbeautyschool.mmapi.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class CourseController {
     public ResponseEntity<?> getCourseList() {
         try {
           return ResponseEntity.ok().body(courseService.getAllCourse());
-        } catch (CourseNotFound e) {
+        } catch (CourseNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -31,7 +31,7 @@ public class CourseController {
     public ResponseEntity<?> getCourseInfo(@PathVariable("id") Long id) {
         try {
           return ResponseEntity.ok().body(courseService.getCourseById(id));
-        } catch (CourseNotFound e) {
+        } catch (CourseNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

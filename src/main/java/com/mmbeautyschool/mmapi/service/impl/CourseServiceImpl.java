@@ -3,7 +3,7 @@ package com.mmbeautyschool.mmapi.service.impl;
 import com.mmbeautyschool.mmapi.entity.Course;
 import com.mmbeautyschool.mmapi.entity.enums.CourseSatatus;
 import com.mmbeautyschool.mmapi.exception.CourseAlreadyExistException;
-import com.mmbeautyschool.mmapi.exception.CourseNotFound;
+import com.mmbeautyschool.mmapi.exception.CourseNotFoundException;
 import com.mmbeautyschool.mmapi.repository.CourseRepository;
 import com.mmbeautyschool.mmapi.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +18,19 @@ public class CourseServiceImpl implements CourseService {
     private CourseRepository courseRepository;
 
     @Override
-    public List<Course> getAllCourse() throws CourseNotFound {
+    public List<Course> getAllCourse() throws CourseNotFoundException {
         List<Course> courses = courseRepository.findAll();
         if (courses.isEmpty()) {
-            throw new CourseNotFound("Courses not found");
+            throw new CourseNotFoundException("Courses not found");
         }
         return courses;
     }
 
     @Override
-    public Course getCourseById(Long id) throws CourseNotFound {
+    public Course getCourseById(Long id) throws CourseNotFoundException {
         Course course = courseRepository.getCourseById(id);
         if (course == null) {
-            throw new CourseNotFound("Course not found");
+            throw new CourseNotFoundException("Course not found");
         }
         return course;
     }
