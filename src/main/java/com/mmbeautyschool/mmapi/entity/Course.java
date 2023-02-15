@@ -23,6 +23,7 @@ public class Course {
     private String uniqCode;
     private String name;
 
+    @Lob
     private String description;
 
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
@@ -32,6 +33,8 @@ public class Course {
     private Date endDate;
 
     private int dayAccess;
+
+    @Lob
     private String urlLink;
 
     private String previewLink;
@@ -41,6 +44,7 @@ public class Course {
 
     private double discount = 1;
 
+    @Lob
     private String fullDescription;
 
     @Enumerated(EnumType.STRING)
