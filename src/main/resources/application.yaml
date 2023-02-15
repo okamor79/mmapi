@@ -27,7 +27,7 @@ spring:
             enable: false
     protocol: smtp
 sender:
-  mail: school@mmbeauty.com.ua
+  mail: M&M Beauty School <school@mmbeauty.com.ua>
 
 password:
   length: 15
