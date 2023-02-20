@@ -37,6 +37,7 @@ public class Course {
     @Lob
     private String urlLink;
 
+    @Lob
     private String previewLink;
 
     private String avatarUrl;

@@ -28,7 +28,11 @@ spring:
     protocol: smtp
 sender:
   mail: M&M Beauty School <school@mmbeauty.com.ua>
-
 password:
   length: 15
+key:
+  public: i47686115987
+  private: dILVnOQhuSfcjRFrtNjOKxUSdP4U02dxQl2HkRD6
+api:
+  version: 3
 

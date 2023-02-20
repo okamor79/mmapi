@@ -27,6 +27,15 @@ public class CourseController {
         }
     }
 
+    @GetMapping("/list_active")
+    public ResponseEntity<?> getActiveCourses() {
+        try {
+            return ResponseEntity.ok().body(courseService.getAllActiveCourse());
+        } catch (CourseNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/info/{id}")
     public ResponseEntity<?> getCourseInfo(@PathVariable("id") Long id) {
         try {

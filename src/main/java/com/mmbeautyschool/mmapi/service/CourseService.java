@@ -11,6 +11,7 @@ import java.util.List;
 public interface CourseService {
 
     List<Course> getAllCourse() throws CourseNotFoundException;
+    List<Course> getAllActiveCourse() throws CourseNotFoundException;
 
     Course getCourseById(Long id) throws CourseNotFoundException;
 

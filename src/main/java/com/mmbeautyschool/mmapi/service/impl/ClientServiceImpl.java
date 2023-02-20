@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -47,7 +45,7 @@ public class ClientServiceImpl implements ClientService {
     public List<Client> getAllClients() throws ClientNotFoundException {
         List<Client> clientList = clientRepository.findAll();
         if (clientList.isEmpty()) {
-            throw new ClientNotFoundException("No clients register");
+            throw new ClientNotFoundException("NO_REGISTER_CLIENT");
         }
         return clientList;
     }
@@ -56,7 +54,7 @@ public class ClientServiceImpl implements ClientService {
     public long newClient(Client client) throws ClientAlreadyExistException {
         Client clientInfo = clientRepository.getClientByEmail(client.getEmail());
         if (clientInfo != null) {
-            throw new ClientAlreadyExistException("E-mail already registered");
+            throw new ClientAlreadyExistException("EMAIL_EXISTS");
         }
         client.setRegistered(new Date());
         client.setRole(UserRole.ROLE_USER);
@@ -69,10 +67,10 @@ public class ClientServiceImpl implements ClientService {
     public ClientModel clientLogin(String email, String password) throws ClientUnauthorizedException {
         Client clientInfo = clientRepository.getClientByEmail(email);
         if (clientInfo == null) {
-            throw new ClientUnauthorizedException("Client not found");
+            throw new ClientUnauthorizedException("CLIENT_NOT_FOUND");
         }
         if (!clientInfo.getPassword().contentEquals(password)) {
-            throw new ClientUnauthorizedException("Bad password");
+            throw new ClientUnauthorizedException("BAD_PASSWORD");
         }
         return ClientModel.toModel(clientInfo);
     }
@@ -81,7 +79,7 @@ public class ClientServiceImpl implements ClientService {
     public ClientModel getClientInfo(String email) throws ClientNotFoundException {
         Client client = clientRepository.getClientByEmail(email);
         if (client == null) {
-            throw new ClientNotFoundException("Client not found");
+            throw new ClientNotFoundException("CLIENT_NOT_FOUND");
         }
         System.out.println(client);
         System.out.println(ClientModel.toModel(client));
@@ -100,7 +98,7 @@ public class ClientServiceImpl implements ClientService {
     public Boolean resetPassword(String email) throws ClientNotFoundException {
         Client client = clientRepository.getClientByEmail(email);
         if (client == null) {
-            throw new ClientNotFoundException("Email does not registered");
+            throw new ClientNotFoundException("EMAIL_NOT_FOUND");
         }
         String newPassword = passwordGenetator(passwordLength);
         String encodePassword = Base64.getEncoder().encodeToString(newPassword.getBytes());
@@ -110,7 +108,9 @@ public class ClientServiceImpl implements ClientService {
         Email mail = new Email();
         mail.setRecipient(client.getEmail());
         mail.setSubject("Ваш оновлений пароль M&M Beauty School");
-        String mailText = "Доброго дня. \n\nВам було згенерований новий пароль для входу у свій обліковий запис. \nПрохання, після успішного входу змінити його у своєму профілі\n\nВаш логін:" + client.getEmail() + "\nВаш новий пароль: " + newPassword;
+        String mailText = "Доброго дня. \n\nВам було згенерований новий пароль для входу у свій обліковий запис. \nПрохання, після успішного входу змінити його у своєму профілі\n\nВаш логін:  "
+                + client.getEmail() + "\nВаш новий пароль:  "
+                + newPassword + "\n\nГарного Вам дня.";
         mail.setMsgBody(mailText);
         emailService.sendSimpleMail(mail);
         return true;

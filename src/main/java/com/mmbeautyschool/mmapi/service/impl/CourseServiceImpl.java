@@ -21,7 +21,16 @@ public class CourseServiceImpl implements CourseService {
     public List<Course> getAllCourse() throws CourseNotFoundException {
         List<Course> courses = courseRepository.findAll();
         if (courses.isEmpty()) {
-            throw new CourseNotFoundException("Courses not found");
+            throw new CourseNotFoundException("COURSE_NOT_FOUND");
+        }
+        return courses;
+    }
+
+    @Override
+    public List<Course> getAllActiveCourse() throws CourseNotFoundException {
+        List<Course> courses = courseRepository.getActiveCourse();
+        if (courses.isEmpty()) {
+            throw new CourseNotFoundException("ACTIVE_COURSE_NOT_FOUND");
         }
         return courses;
     }
@@ -30,7 +39,7 @@ public class CourseServiceImpl implements CourseService {
     public Course getCourseById(Long id) throws CourseNotFoundException {
         Course course = courseRepository.getCourseById(id);
         if (course == null) {
-            throw new CourseNotFoundException("Course not found");
+            throw new CourseNotFoundException("COURSE_NOT_FOUND");
         }
         return course;
     }
@@ -39,7 +48,7 @@ public class CourseServiceImpl implements CourseService {
     public long newCourse(Course course) throws CourseAlreadyExistException {
         Course newCourse = courseRepository.getCourseByUniqCode(course.getUniqCode());
         if (newCourse != null) {
-            throw new CourseAlreadyExistException("Course with this unique code is already exist");
+            throw new CourseAlreadyExistException("COURSE_UNIQ_CODE_EXIST");
         }
         newCourse = course;
         newCourse.setUniqCode(newCourse.getUniqCode().toUpperCase());
@@ -59,4 +68,6 @@ public class CourseServiceImpl implements CourseService {
         course.setStatus(status);
         courseRepository.save(course);
     }
+
+
 }

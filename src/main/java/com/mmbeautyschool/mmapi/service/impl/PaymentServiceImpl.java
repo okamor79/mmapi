@@ -5,8 +5,8 @@ import com.mmbeautyschool.mmapi.entity.enums.OrderStatus;
 import com.mmbeautyschool.mmapi.repository.CourseRepository;
 import com.mmbeautyschool.mmapi.repository.SaleRepository;
 import com.mmbeautyschool.mmapi.service.PaymentService;
-import com.mmbeautyschool.mmapi.service.StaticValue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -18,6 +18,16 @@ import com.liqpay.LiqPay;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
+
+    @Value("${key.public}")
+    private String PUBLIC_KEY;
+
+    @Value("${key.private}")
+    private String PRIVATE_KEY;
+
+    @Value("${api.version}")
+    private int apiVersion;
+
 
     @Autowired
     private final SaleRepository saleRepository;
@@ -36,14 +46,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Scheduled(cron = "*/5 * * * * *")
     public void checkPayment() throws Exception {
-        LiqPay liqPay = new LiqPay(StaticValue.PUBLIC_KEY, StaticValue.PRIVATE_KEY);
+        LiqPay liqPay = new LiqPay(PUBLIC_KEY, PRIVATE_KEY);
         Collection<OrderStatus> orderStatuses = new ArrayList<>(Arrays.asList(OrderStatus.ORDER_WAIT, OrderStatus.ORDER_CANCEL));
         List<Sale> orderList = saleRepository.getUnpaidOrders(orderStatuses);
         for (int i = 0; i<orderList.size();i++) {
             HashMap<String, String> params = new HashMap<>();
             Sale order = orderList.get(i);
             params.put("action","status");
-            params.put("version", String.valueOf(StaticValue.LIQPAY_VERSION));
+            params.put("version", String.valueOf(apiVersion));
             params.put("order_id",order.getOrderId());
             HashMap<String, Object> resultRequest = (HashMap<String, Object>) liqPay.api("request", params);
             if (resultRequest.get("status").equals("success")) {
@@ -68,9 +78,30 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public Sale changeStatus(long id) {
+        Sale order = saleRepository.findById(id);
+        order.setStatus(OrderStatus.ORDER_COMPLETE);
+        order.setPayCheck(true);
+        saleRepository.save(order);
+        return null;
+
+    }
+
+    @Override
     @Scheduled(cron = "@daily")
     public void deleteNotPayment() {
         List<Sale> orderList = saleRepository.getUnpaidOrders(orderStatuses);
         saleRepository.deleteAll(orderList);
     }
+
+//    @Override
+//    public boolean checkCourseSale(long clientId, long courseId, boolean check) {
+//        Sale orders = saleRepository.checkCoursePaymentByClient(clientId, courseId, check);
+//        if (orders == null)
+//            return true;
+//        else
+//            return false;
+//    }
+
+
 }
